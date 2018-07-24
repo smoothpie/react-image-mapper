@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 export default class ImageMapper extends Component {
 	constructor(props) {
 		super(props);
-		['drawrect', 'drawcircle', 'drawpoly', 'initCanvas'].forEach(f => this[f] = this[f].bind(this));
+		['drawrect', 'drawcircle', 'drawpoly', 'drawImageCircle', 'initCanvas'].forEach(f => this[f] = this[f].bind(this));
 		let absPos = { position: 'absolute', top: 0, left: 0 };
 		this.styles = {
 			container: { position: 'relative' },
@@ -39,6 +39,24 @@ export default class ImageMapper extends Component {
 		this.ctx.closePath();
 		this.ctx.stroke();
 		this.ctx.fill();
+	}
+
+	drawImageCircle(coords) {
+		coords = coords.split(',');
+		let image = newImage();
+		image.src = this.props.image;
+		this.ctx.beginPath();
+		this.ctx.arc(coords[0], coords[1], coords[2], 0, 2 * Math.PI);
+		this.ctx.closePath();
+		this.ctx.clip();
+
+		this.ctx.drawImage(image, 0, 0, this.props.imageWidth, this.props.imageHeight);
+
+		this.ctx.beginPath();
+		this.ctx.arc(0, 0, coords[2], 0, 2 * Math.PI);
+		this.ctx.clip();
+		this.ctx.closePath();
+		this.ctx.restore();
 	}
 
 	initCanvas() {
